@@ -17,8 +17,9 @@ module.exports = {
   // Get single user by id
   getOneUser(req, res) {
     User.findOne({ _id: req.params.userId })
-      .populate("thoughts")
-      .populate("friends")
+      .select('-__v')
+      // .populate("thoughts")
+      // .populate("friends")
       .then((userData) => {
         if (!userData) {
           return res.status(404).json({ message: "No user with this id!" });
@@ -76,7 +77,9 @@ module.exports = {
         }
 
         // BONUS: Remove a user's associated thoughts when deleted.
-        return Thought.deleteMany({ _id: { $in: userData.thoughts } });
+        if (userData.thoughts.length) {
+          return Thought.update( { $set: { "userData.thoughts": [] } } );
+        }
       })
       .then(() => {
         res.json({ message: "User and associated thoughts deleted!" });
