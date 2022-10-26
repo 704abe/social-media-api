@@ -78,7 +78,7 @@ module.exports = {
 
         // BONUS: Remove a user's associated thoughts when deleted.
         if (userData.thoughts.length) {
-          return Thought.update( { $set: { "userData.thoughts": [] } } );
+          return Thought.deleteMany( { _id: { $in: userData.thoughts } } );
         }
       })
       .then(() => {
